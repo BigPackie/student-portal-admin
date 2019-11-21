@@ -1,8 +1,10 @@
 {
-  "name": "studentPortalAdmin",
+  "name": "student-portal-admin",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "description": "Administration web app for ICIT student portal",
+  "author": "ppindes@gmail.com",
+  "homepage": "https://kmutnb.ac.th/faculty-and-agencies/bangkok/icit.aspx",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -53,6 +55,5 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
-  },
-  "description": "An Ionic project"
+  }
 }
