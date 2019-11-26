@@ -29,4 +29,8 @@ export class DataService {
     )
   }
 
+  createNewsItemManually(newsItem: any): Observable<any> {
+    return this.databaseService.createNewsItem(newsItem);
+  }
+
 }
