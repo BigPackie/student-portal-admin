@@ -19,6 +19,11 @@ export class DatabaseService {
       .pipe(catchError(this.handleError));
   }
 
+  createNewsItemDetail(newsItemDetail: any): Observable<any> {
+    return this.http.post('http://localhost:3000/database/newsDetail', { ...newsItemDetail })
+      .pipe(catchError(this.handleError));
+  }
+
 
   //TODO: globaly in interceptor?
   handleError(error) {

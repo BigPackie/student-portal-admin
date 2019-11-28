@@ -16,6 +16,13 @@
   <ion-text>
     <p>Latest object id: {{addeItemId}}</p>
   </ion-text>
+  <ion-item-divider></ion-item-divider>
+  <ion-button (click)="onSimulateDetail()">
+    Simulate adding detail data to database (will not work if not added )
+  </ion-button>
+  <ion-text>
+    <p>Object id of details: {{addeItemDetailId}}</p>
+  </ion-text>
 
   <div class="container">
     <div class="row">

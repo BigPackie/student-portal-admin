@@ -29,6 +29,10 @@ export class DataService {
     )
   }
 
+  createNewsItemDetails(newsItemDetail: any): Observable<any> {
+    return this.databaseService.createNewsItemDetail(newsItemDetail);
+  }
+
   createNewsItemManually(newsItem: any): Observable<any> {
     return this.databaseService.createNewsItem(newsItem);
   }

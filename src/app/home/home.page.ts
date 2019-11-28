@@ -10,7 +10,9 @@ import { stringify } from 'querystring';
 })
 export class HomePage {
 
-  addeItemId;
+  addeItemId: any;
+
+  addeItemDetailId: any;
 
   testNewsItem = {
     validFrom: new Date(),
@@ -18,6 +20,11 @@ export class HomePage {
     //overviewImageBase64: Buffer   //added when picture is loaded
     overviewImagePath: "icon/favicon.png",
     detailText:""
+  };
+
+  testNewsItemDetails = {
+    imageBase64: "somebase64string",
+    description:"A detail for news."
   };
 
   constructor(private dataService : DataService) {  
@@ -31,6 +38,17 @@ export class HomePage {
     this.dataService.createNewsItem(this.testNewsItem).subscribe((res) => {
       //TODO: handle creation failure
       this.addeItemId = res._id
+      console.log(res);
+    });
+  }
+
+  onSimulateDetail(){
+    let newsDetails = {...this.testNewsItemDetails};
+    console.log(`using ${this.addeItemId} for newsDetailID`)
+    newsDetails['_id'] = this.addeItemId;
+    this.dataService.createNewsItemDetails(newsDetails).subscribe((res) => {
+      //TODO: handle creation failure
+      this.addeItemDetailId = res._id
       console.log(res);
     });
   }
