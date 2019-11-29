@@ -15,7 +15,10 @@ export class DatabaseService {
   }
 
   createNewsItem(newsItem: any): Observable<any> {
-    return this.http.post('http://localhost:3000/database/news', { ...newsItem })
+    return this.http.post('http://localhost:3000/database/news', { ...newsItem }, {
+      reportProgress: true,
+      observe: 'events'   
+    })
       .pipe(catchError(this.handleError));
   }
 

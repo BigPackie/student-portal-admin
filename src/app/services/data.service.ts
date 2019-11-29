@@ -4,6 +4,7 @@ import { HttpResponse, HttpClient } from '@angular/common/http';
 import { map, mergeMap } from "rxjs/operators";
 import { DatabaseService } from './database.service';
 import { LocalFilesService } from './localFiles.service';
+import { TouchSequence } from 'selenium-webdriver';
 
 export enum IMG_SRC_TYPE_PREFIX {
   Base64 = "data:image/jpeg;base64,"
@@ -35,6 +36,10 @@ export class DataService {
 
   createNewsItemManually(newsItem: any): Observable<any> {
     return this.databaseService.createNewsItem(newsItem);
+  }
+
+  getNews(): Observable<any> {
+    return this.databaseService.getNews();
   }
 
 }

@@ -24,28 +24,70 @@
     <p>Object id of details: {{addeItemDetailId}}</p>
   </ion-text>
 
+  <ion-item-divider></ion-item-divider>
+
   <div class="container">
     <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <h3>Choose File</h3>            
-            <div class="form-group">
-                <ion-input type="file" name="image" (change)="fileProgress($event)" ></ion-input>
-            </div>
-            <div *ngIf="fileUploadProgress">
-                Upload progress: {{ fileUploadProgress }}
-            </div>
-            <div class="image-preview mb-3" *ngIf="previewUrl">
-                <img [src]="previewUrl" height="300" />                 
-            </div>
- 
-            <div class="mb-3" *ngIf="uploadedFilePath">
-                {{uploadedFilePath}}
-            </div>
-             
-            <div class="form-group">
-                <ion-button class="btn btn-primary" [disabled]='!imageReady' (click)="onSubmit()">Submit</ion-button>
-            </div>
+      <div class="col-md-6 offset-md-3">
+        <h3>Choose iamge for news</h3>
+        <div class="form-group">
+          <ion-input type="file" name="image" (change)="fileProgress($event)"></ion-input>
         </div>
+        <div *ngIf="fileUploadProgress">
+          Upload progress: {{ fileUploadProgress }}
+        </div>
+        <div class="image-preview mb-3" *ngIf="previewUrl">
+          <img [src]="previewUrl" height="300" />
+        </div>
+  
+        <div class="mb-3" *ngIf="uploadedFilePath">
+          {{uploadedFilePath}}
+        </div>
+  
+        <div class="form-group">
+          <ion-button class="btn btn-primary" [disabled]='!imageReady' (click)="onSubmit()">Submit</ion-button>
+          <ion-input type="text" placeholder="Not saved yet!" [value]="newsItemSavedId" readonly='true' >Saved id: </ion-input>
+        </div>
+      </div>
     </div>
+  </div>
+
+<ion-item-divider></ion-item-divider>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <h3>Choose image for news detail</h3>
+      <div class="form-group">
+        <ion-input type="file" name="image" (change)="detailProgress($event)"></ion-input>
+      </div>
+      <div *ngIf="detailUploadProgress">
+        Upload progress: {{ detailUploadProgress }}
+      </div>
+      <div class="image-preview mb-3" *ngIf="detailPreviewUrl">
+        <img [src]="detailPreviewUrl" height="300" />
+      </div>
+
+      <div class="mb-3" *ngIf="uploadedDetailFilePath">
+        {{uploadedDetailFilePath}}
+      </div>
+
+      <div class="form-group">
+          <ion-item>
+            <ion-label>News item id</ion-label>
+            <ion-select [(ngModel)]="selectedNewsId" placeholder="Select One">
+              <ion-select-option *ngFor="let newsItem of (news$ | async)" [value]="newsItem._id">{{newsItem._id}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+      </div>
+
+      <div class="form-group">
+        <ion-button class="btn btn-primary" [disabled]='!detailImageReady' (click)="onSubmitDetail()">Submit detail</ion-button>
+        <ion-input type="text" placeholder="Not saved yet!" [value]="newsDetailItemSavedId" readonly='true' >Saved detail id: </ion-input>
+      </div>
+    </div>
+  </div>
 </div>
+
+
 </ion-content>
