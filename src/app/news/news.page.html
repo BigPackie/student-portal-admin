@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>News</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="presentFilter()">
+        <span *ngIf="ios">Filter</span>
+        <span *ngIf="!ios">
+          <ion-icon slot="icon-only" name="options"></ion-icon>
+        </span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="segmentFilter" (ionChange)="updateNews()">
+        <ion-segment-button value="active">
+            active
+          </ion-segment-button>
+        <ion-segment-button value="recent">
+            Recently added
+          </ion-segment-button>
+        <ion-segment-button value="changed">
+            Recently changed
+          </ion-segment-button>
+        <ion-segment-button value="finished">
+          Finished
+        </ion-segment-button>
+        <ion-segment-button value="all">
+          All
+        </ion-segment-button>
+      </ion-segment>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="queryText" (ionChange)="updateNews()" placeholder="Search"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="full" #newsListElement>
+    <ion-item *ngFor="let newsItem of news" detail="false">
+      <ion-label class="ion-text-wrap">
+        <h2>{{newsItem.name}}</h2>
+        <p>({{newsItem._id}})</p>
+        <p>
+          {{newsItem.validFrom}} &mdash; {{newsItem.validTo}}
+        </p>
+      </ion-label>
+      <div class="img-container" slot="start">
+          <img src="https://via.placeholder.com/300/09f/fff.png%20C/O%20https://placeholder.com/" />
+      </div>
+
+        <ion-button (click)="onClick()" color="danger">
+          Delete
+        </ion-button>
+        <ion-button (click)="onClick()" color="warning">
+          Edit
+        </ion-button>
+        <ion-button (click)="onClick()">
+          Details
+        </ion-button>
+      
+    </ion-item> 
+      <ion-item>
+        <ion-label position="floating">MM/DD/YYYY</ion-label>
+        <ion-datetime displayFormat="MM/DD/YYYY" placeholder="Select Date" min="1994-03-14" max="2012-12-09" value="2002-09-23T15:03:46.789"></ion-datetime>
+      </ion-item>
+      
+  </ion-list>
+
+  
+
+</ion-content>
