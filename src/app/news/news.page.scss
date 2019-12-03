@@ -3,10 +3,12 @@ ion-item .img-container {
     padding-top: 2px;
     height: 10vw;
     width: 20%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 ion-item .img-container>img {
-    height: 100%;
+    max-height: 100%;
     max-width: 100%;
 }

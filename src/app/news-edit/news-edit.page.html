@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-buttons slot="start">
+         <ion-buttons slot="start">
+           <ion-back-button></ion-back-button>
+         </ion-buttons>
+      </ion-buttons>
+    <ion-title>Details of {{newsId}}</ion-title>
+    <ion-button *ngIf="!editMode" (click)="onEdit()" slot="end" color="warning">
+      Edit
+    </ion-button>
+    <ion-button *ngIf="editMode" (click)="presentCancelConfirm()" slot="end" color="warning">
+        Cancel
+    </ion-button>
+    <ion-button *ngIf="editMode" (click)="presentSaveConfirm()" slot="end" color="success">
+        Save
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+</ion-content>

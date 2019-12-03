@@ -46,6 +46,7 @@
   <ion-list lines="full" #newsListElement>
     <ion-item *ngFor="let newsItem of news" detail="false">
       <ion-label class="ion-text-wrap">
+        <ion-badge *ngIf="newsItem.deleted" color="danger">Deleted</ion-badge>
         <h2>{{newsItem.name}}</h2>
         <p>({{newsItem._id}})</p>
         <p>
@@ -53,16 +54,13 @@
         </p>
       </ion-label>
       <div class="img-container" slot="start">
-          <img src="https://via.placeholder.com/300/09f/fff.png%20C/O%20https://placeholder.com/" />
+          <img [src]="newsItem.overviewImageBase64" (error)="showPlaceHolderOnError($event.srcElement)" />
       </div>
 
-        <ion-button (click)="onClick()" color="danger">
+        <ion-button (click)="onClick()" color="danger" [disabled]="newsItem.deleted">
           Delete
         </ion-button>
-        <ion-button (click)="onClick()" color="warning">
-          Edit
-        </ion-button>
-        <ion-button (click)="onClick()">
+        <ion-button routerLink="/news-edit/{{newsItem._id}}" routerDirection="forward">
           Details
         </ion-button>
       

@@ -38,6 +38,7 @@ export class DataService {
     return this.databaseService.createNewsItem(newsItem);
   }
 
+  //TODO: maybe it should continuously receive the data  1 by 1 and not return together as a field.
   getNews(): Observable<any> {
     return this.databaseService.getNews();
   }
