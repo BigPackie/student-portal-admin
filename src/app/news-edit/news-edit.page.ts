@@ -3,7 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavigationStart } from "@angular/router";
 import { AlertController } from '@ionic/angular';
 import { Event as NavigationEvent } from "@angular/router";
-import { filter } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
+import { DataService } from '../services/data.service';
+import { NgForm } from '@angular/forms';
+import { NewsItem } from '../models/news.item';
+import { NewsItemDetail } from '../models/news.item.detail';
 
 @Component({
   selector: 'app-news-edit',
@@ -16,7 +20,16 @@ export class NewsEditPage implements OnInit {
 
   editMode: boolean = false;
 
-  constructor(private route: ActivatedRoute, private alertController: AlertController, private router:Router) { 
+  newsItem: NewsItem = new NewsItem();
+
+  newsItemDetail: NewsItemDetail = new NewsItemDetail();
+
+  submitted = false;
+
+  constructor(private route: ActivatedRoute,
+              private alertController: AlertController, 
+              private router:Router,
+              private dataService : DataService) { 
 
     //TODO: need to prevent back button if confirm alert is visible or if in edit mode.
     
@@ -76,13 +89,25 @@ export class NewsEditPage implements OnInit {
   }
 
   ngOnInit() {
-
-    //TODO: maybe needed to fetch in viewWillEnter
     this.newsId = this.route.snapshot.paramMap.get('id');
+  }
+
+  ionViewWillEnter(){
+    this.loadNewsData();
+  }
+
+  //TODO: while data loading, prevend edit mode
+  loadNewsData(){
     console.log(`Getting data for news item ${this.newsId}`);
+    this.dataService.getNewsItem(this.newsId).pipe(take(1)).subscribe(res => {
+      console.log(`Title ${res.name}`)
+      this.newsItem = { ...res };
+    });
 
     console.log(`Getting data for news detail ${this.newsId}`);
-    //this.newsItemDetail$ = this.dataService.getNewsDetail(newsDetailId).pipe(take(1))
+     this.dataService.getNewsItemDetail(this.newsId).pipe(take(1)).subscribe(res => {
+      this.newsItemDetail = { ...res };
+    });
   }
 
 
@@ -90,15 +115,18 @@ export class NewsEditPage implements OnInit {
     this.editMode = true;
   }
 
-  private onSave(){
-    this.editMode = false;
+  private onSave(form: NgForm){
+    if (form.valid){
+      console.log(`valid form, do stuff`);
+      this.editMode = false;
+    }
   }
 
   private onCancel(){
     this.editMode = false;
   }
 
-  async presentSaveConfirm() {
+  async presentSaveConfirm(form: NgForm) {
     const alert = await this.alertController.create({
       header: 'Save?',
       message: 'Are you <strong>sure</strong> you want to save changes?',
@@ -111,7 +139,7 @@ export class NewsEditPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
-            this.onSave();
+            this.onSave(form);
           }
         }
       ]
@@ -141,5 +169,6 @@ export class NewsEditPage implements OnInit {
 
     await alert.present();
   }
+
 
 }

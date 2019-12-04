@@ -20,4 +20,34 @@
 
 <ion-content>
 
+    <form #newsEditForm="ngForm" novalidate>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label position="stacked" color="primary">News title</ion-label>
+            <ion-input [(ngModel)]="newsItem.name" name="name" type="text" #name="ngModel" required>
+            </ion-input>
+          </ion-item>
+          <ion-text color="danger">
+            <p [hidden]="name.valid || submitted == false" class="ion-padding-start">
+              Title is required
+            </p>
+          </ion-text>
+    
+          <ion-item>
+            <ion-label position="stacked" color="primary">Description</ion-label>
+            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel" required>
+            </ion-input>
+          </ion-item>
+          <ion-text color="danger">
+            <p [hidden]="description.valid || submitted == false" class="ion-padding-start">
+              Password is required
+            </p>
+          </ion-text>
+        </ion-list>
+    
+        <!-- <div class="ion-padding">
+          <ion-button (click)="onSignup(signupForm)" type="submit" expand="block">Create</ion-button>
+        </div> -->
+      </form>
+
 </ion-content>

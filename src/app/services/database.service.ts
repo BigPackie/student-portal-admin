@@ -14,8 +14,16 @@ export class DatabaseService {
     return this.http.get('http://localhost:3000/database/news');
   }
 
+  getNewsItem(id: string): Observable<any> {
+    return this.http.get("http://localhost:3000/database/newsItem", { params: { "id": id } });
+  }
+
+  getNewsItemDetail(id: string): Observable<any> {
+    return this.http.get("http://localhost:3000/database/newsDetail", { params: { "id": id } });
+  }
+
   createNewsItem(newsItem: any): Observable<any> {
-    return this.http.post('http://localhost:3000/database/news', { ...newsItem }, {
+    return this.http.post('http://localhost:3000/database/newsItem', { ...newsItem }, {
       reportProgress: true,
       observe: 'events'   
     })
