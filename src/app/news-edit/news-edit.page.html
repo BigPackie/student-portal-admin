@@ -23,8 +23,9 @@
     <form #newsEditForm="ngForm" novalidate>
         <ion-list lines="none">
           <ion-item>
-            <ion-label position="stacked" color="primary">News title</ion-label>
-            <ion-input [(ngModel)]="newsItem.name" name="name" type="text" #name="ngModel" required>
+            <ion-label position="stacked" color="primary">News Title</ion-label>
+            <ion-input [(ngModel)]="newsItem.name" name="name" type="text" #name="ngModel" required
+              placeholder="News Title, useful for search">
             </ion-input>
           </ion-item>
           <ion-text color="danger">
@@ -32,10 +33,11 @@
               Title is required
             </p>
           </ion-text>
-    
+        
           <ion-item>
             <ion-label position="stacked" color="primary">Description</ion-label>
-            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel" required>
+            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel"
+              placeholder="Optional details">
             </ion-input>
           </ion-item>
           <ion-text color="danger">
@@ -43,6 +45,36 @@
               Password is required
             </p>
           </ion-text>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Overview image</ion-label> 
+            <ion-input type="file" name="image" (change)="fileProgress($event)"></ion-input>
+        
+            <div *ngIf="fileUploadProgress">
+              Upload progress: {{ fileUploadProgress }}
+            </div>
+            <div class="image-preview mb-3" *ngIf="previewUrl">
+              <img [src]="previewUrl" height="300" />
+            </div>
+            <div class="mb-3" *ngIf="uploadedFilePath">
+              {{uploadedFilePath}}
+            </div>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Detail image</ion-label>
+            <ion-input type="file" name="image" (change)="detailProgress($event)"></ion-input>
+
+            <div *ngIf="detailUploadProgress">
+              Upload progress: {{ detailUploadProgress }}
+            </div>
+
+            <div class="image-preview mb-3" *ngIf="detailPreviewUrl">
+              <img [src]="detailPreviewUrl" height="300" />
+            </div>
+        
+            <div class="mb-3" *ngIf="uploadedDetailFilePath">
+              {{uploadedDetailFilePath}}
+            </div>
+          </ion-item>
         </ion-list>
     
         <!-- <div class="ion-padding">
