@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavigationStart } from "@angular/router";
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { Event as NavigationEvent } from "@angular/router";
-import { filter, take } from 'rxjs/operators';
+import { filter, take, finalize, switchMap, tap } from 'rxjs/operators';
 import { DataService } from '../services/data.service';
 import { NgForm } from '@angular/forms';
 import { NewsItem } from '../models/news.item';
 import { NewsItemDetail } from '../models/news.item.detail';
 import { HttpEventType } from '@angular/common/http';
+import { LocalFilesService } from '../services/localFiles.service';
+import { concat, throwError, Observable, Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-news-edit',
@@ -21,6 +23,8 @@ export class NewsEditPage implements OnInit {
 
   editMode: boolean = false;
 
+  newsDataLoaded : boolean = false;
+
   newsItem: NewsItem = new NewsItem();
 
   newsItemDetail: NewsItemDetail = new NewsItemDetail();
@@ -30,63 +34,12 @@ export class NewsEditPage implements OnInit {
   constructor(private route: ActivatedRoute,
               private alertController: AlertController, 
               private router:Router,
-              private dataService : DataService) { 
+              private dataService : DataService,
+              private localFileService : LocalFilesService,
+              private loadingController: LoadingController,
+              private toastController: ToastController) { 
 
     //TODO: need to prevent back button if confirm alert is visible or if in edit mode.
-    
-    // router.events
-    //         .pipe(
-    //             // The "events" stream contains all the navigation events. For this demo,
-    //             // though, we only care about the NavigationStart event as it contains
-    //             // information about what initiated the navigation sequence.
-    //             filter(
-    //                 ( event: NavigationEvent ) => {
- 
-    //                     return( event instanceof NavigationStart );
- 
-    //                 }
-    //             )
-    //         )
-    //         .subscribe(
-    //             ( event: NavigationStart ) => {
- 
-    //                 console.group( "NavigationStart Event" );
-    //                 // Every navigation sequence is given a unique ID. Even "popstate"
-    //                 // navigations are really just "roll forward" navigations that get
-    //                 // a new, unique ID.
-    //                 console.log( "navigation id:", event.id );
-    //                 console.log( "route:", event.url );
-    //                 // The "navigationTrigger" will be one of:
-    //                 // --
-    //                 // - imperative (ie, user clicked a link).
-    //                 // - popstate (ie, browser controlled change such as Back button).
-    //                 // - hashchange
-    //                 // --
-    //                 // NOTE: I am not sure what triggers the "hashchange" type.
-    //                 console.log( "trigger:", event.navigationTrigger );
- 
-    //                 // This "restoredState" property is defined when the navigation
-    //                 // event is triggered by a "popstate" event (ex, back / forward
-    //                 // buttons). It will contain the ID of the earlier navigation event
-    //                 // to which the browser is returning.
-    //                 // --
-    //                 // CAUTION: This ID may not be part of the current page rendering.
-    //                 // This value is pulled out of the browser; and, may exist across
-    //                 // page refreshes.
-    //                 if ( event.restoredState ) {
- 
-    //                     console.warn(
-    //                         "restoring navigation id:",
-    //                         event.restoredState.navigationId
-    //                     );
- 
-    //                 }
- 
-    //                 console.groupEnd();
- 
-    //             }
-    //         )
-    //     ;
   }
 
   ngOnInit() {
@@ -97,18 +50,54 @@ export class NewsEditPage implements OnInit {
     this.loadNewsData();
   }
 
-  //TODO: while data loading, prevend edit mode
-  loadNewsData(){
-    console.log(`Getting data for news item ${this.newsId}`);
-    this.dataService.getNewsItem(this.newsId).pipe(take(1)).subscribe(res => {
-      console.log(`Title ${res.name}`)
-      this.newsItem = { ...res };
+  async loadNewsData(){
+    const loading = await this.loadingController.create({
+      message: 'Getting news data',
     });
 
-    console.log(`Getting data for news detail ${this.newsId}`);
-     this.dataService.getNewsItemDetail(this.newsId).pipe(take(1)).subscribe(res => {
-      this.newsItemDetail = { ...res };
-    });
+    await loading.present();
+
+    // console.log(`Getting data for news item ${this.newsId}`);
+    // this.dataService.getNewsItem(this.newsId)
+    //   .pipe(
+    //     take(1),
+    //     finalize(() => loading.dismiss()))
+    //   .subscribe(res => {
+    //     console.log(`Title ${res.name}`)
+    //     this.newsItem = { ...res };
+    //     console.log(`Getting data for news detail ${this.newsId}`);
+    //     this.dataService.getNewsItemDetail(this.newsId).pipe(take(1)).subscribe(res => {
+    //       this.newsItemDetail = { ...res };
+    //       this.newsDataLoaded = true;
+    //     });
+    //   });
+
+    concat(
+      this.dataService.getNewsItem(this.newsId)
+        .pipe(
+          take(1),
+          tap((newsItem: NewsItem) => {
+            if (!newsItem) {
+              throw new Error(`NewsItem with id '${this.newsId}' does not exist`);
+            }
+            console.log(`Got newsItem.`);
+            this.newsItem = { ...newsItem };
+          })
+        ),
+      this.dataService.getNewsItemDetail(this.newsId)
+        .pipe(
+          take(1),
+          tap((newsItemDetail: NewsItemDetail) => {
+            console.log(`Got newsItemDetail.`);
+            this.newsItemDetail = { ...newsItemDetail }
+          })
+        )
+    ).pipe(
+      finalize(() => {
+        loading.dismiss();
+        console.log(`Getting news data ended`);
+      })
+    ).subscribe();
   }
 
 
@@ -116,11 +105,33 @@ export class NewsEditPage implements OnInit {
     this.editMode = true;
   }
 
-  private onSave(form: NgForm){
-    if (form.valid){
-      console.log(`valid form, do stuff`);
+  async onSave(){  
+    //console.log(`valid form, do stuff`);
+
+    const saving = await this.loadingController.create({
+      message: 'Saving news data',
+    });
+
+    await saving.present();
+
+    const saveToast = await this.toastController.create({
+      header: 'News saved',
+      message: 'News successfully saved to database',
+      position: 'top',
+      duration: 3000
+    });
+
+
+    //TODO: save news item details
+    this.saveNewsItem()
+    .pipe(
+      finalize(() => saving.dismiss())
+    )
+    .subscribe( res => {
+      saveToast.present();
       this.editMode = false;
-    }
+    });
+
   }
 
   private onCancel(){
@@ -140,7 +151,7 @@ export class NewsEditPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
-            this.onSave(form);
+            this.onSave();
           }
         }
       ]
@@ -173,74 +184,44 @@ export class NewsEditPage implements OnInit {
 
 
     //TODO: manual file uploading, put it into own component
-    fileData: File = null;
-    previewUrl:any = null;
     fileUploadProgress: string = null;
-    uploadedFilePath: string = null;
-    imageReady : boolean = false;
-  
     newsItemSavedId: string;
   
    
-    fileProgress(fileInput: any) {
-          this.fileData = <File>fileInput.target.files[0];
-          this.preview();
-    }
-   
-    preview() {
-        // Show preview 
-        var mimeType = this.fileData.type;
-        if (mimeType.match(/image\/*/) == null) {
-          return;
-        }
+  onFileLoaded(fileInput: any) {
+    const fileData = <File>fileInput.target.files[0];
+    this.localFileService.blobToBase64(fileData).pipe(take(1))
+      .subscribe((img: { data: string, type: string }) => {
+        console.log(`Loaded img: ${img.type}`);
+        this.newsItem.overviewImageBase64 = img.data;
+      });
+  }
     
-        var reader = new FileReader();      
-        reader.readAsDataURL(this.fileData); 
-        reader.onload = (_event) => { 
-          this.previewUrl = reader.result; 
-          this.imageReady = true;
-        }
+  saveNewsItem() {
+    this.fileUploadProgress = '0%';
+
+    //TODO: handle creation failure
+    //TODO: handle new entity/ update entity
+    if (this.newsItem._id) {
+      console.log(`Updating newsItem with id ${this.newsItem._id}`);
+    } else {
+      console.log(`Creating newsItem`);
     }
-    
-    //TODO temporar solution, should be refactored
-    onSubmit() {
-        const formData = new FormData();
-          formData.append('file', this.fileData);
-          // this.dataService.post('url/to/your/api', formData)
-          //   .subscribe(res => {
-          //     console.log(res);
-          //     this.uploadedFilePath = res.data.filePath;
-          //     alert('SUCCESS !!');
-          //   })
-  
-          this.fileUploadProgress = '0%';
-  
-          let newsItem = {
-            name:"test news",
-            validFrom: new Date(),
-            validTo: new Date("1.1.2666"),
-            overviewImageBase64: this.previewUrl,   //added when picture is loaded
-           // testArray: new Array(20000000)  //to simulate high payload, so that progress is visible
-          };
-  
-          //TODO: handle creation failure
-          console.log(`Creating newsItem ${newsItem}`);
-          this.dataService.createNewsItemManually(newsItem).subscribe((res) => {
-            if(res.type === HttpEventType.UploadProgress) {
-              this.fileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
-              console.log(this.fileUploadProgress);
-            } else if (res.type === HttpEventType.Response) {
-              this.fileUploadProgress = '';
-              this.newsItemSavedId = res.body._id;
-              //this.loadNews();
-              console.log(res);      
-              alert('News succesfully saved!');
-            }
-          
-          });
-  
-          this.imageReady = false;
-    }
+
+    return this.dataService.createNewsItemManually(this.newsItem)
+      .pipe(
+        tap((res) => {
+          if (res.type === HttpEventType.UploadProgress) {
+            this.fileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
+            console.log(this.fileUploadProgress);
+          } else if (res.type === HttpEventType.Response) {
+            this.fileUploadProgress = '';
+            this.newsItemSavedId = res.body._id;
+            console.log(res);
+          }
+        })
+      );
+  }
   
     //end of manual file uploading
   

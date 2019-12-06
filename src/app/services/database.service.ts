@@ -15,11 +15,11 @@ export class DatabaseService {
   }
 
   getNewsItem(id: string): Observable<any> {
-    return this.http.get("http://localhost:3000/database/newsItem", { params: { "id": id } });
+    return this.http.get("http://localhost:3000/database/newsItem", { params: { "id": id } }).pipe(catchError(this.handleError));;
   }
 
   getNewsItemDetail(id: string): Observable<any> {
-    return this.http.get("http://localhost:3000/database/newsDetail", { params: { "id": id } });
+    return this.http.get("http://localhost:3000/database/newsDetail", { params: { "id": id } }).pipe(catchError(this.handleError));;
   }
 
   createNewsItem(newsItem: any): Observable<any> {

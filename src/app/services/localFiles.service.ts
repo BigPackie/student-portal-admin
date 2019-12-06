@@ -10,7 +10,8 @@ import { ReadVarExpr } from '@angular/compiler';
 })
 export class LocalFilesService {
 
-  private readonly allowedImageTypes = ['image/png', 'image/jpg', 'image/gif', 'image/svg+xml']
+  //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#Supported_image_formats
+  private readonly allowedImageTypes = ['image/png','image/webp', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/bmp', 'image/apng', 'image/x-icon'];
 
     private readonly localPath: string = 'assets';
 
@@ -33,12 +34,12 @@ export class LocalFilesService {
   }
 
   blobToBase64(blob : Blob): Observable<{data: string, type: string}>{
-    console.log(`blob size: ${blob.size} bytes`);
+    console.log(`blob size: ${(blob.size / 1024).toFixed(2)} KB`);
     console.log(`blob type: ${blob.type}`);
 
     if(!this.allowedImageTypes.includes(blob.type)){
-      console.error(`Not valid data type. Please upload image of type ${this.allowedImageTypes}`);
-      throwError(`Not valid data type. Please upload image of type ${this.allowedImageTypes}`);
+      //console.error(`Not valid data type. Please upload image of type ${this.allowedImageTypes}`);
+      return throwError(`Not valid data type. Please upload image of type ${this.allowedImageTypes}`);
     }
 
     const fileReader = new FileReader();
@@ -54,7 +55,7 @@ export class LocalFilesService {
           observer.error(`Not valid base64 image.`);
         }
 
-        console.log(`Convertion to base64 successful: ${convertedString}`);
+        console.log(`Convertion to base64 successful`);
 
         observer.next({data: convertedString, type: blob.type});
         //observer.next({data: this.removeBase64DataPrefix(convertedString as string), type: blob.type});

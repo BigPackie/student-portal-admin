@@ -24,7 +24,7 @@
         <ion-list lines="none">
           <ion-item>
             <ion-label position="stacked" color="primary">News Title</ion-label>
-            <ion-input [(ngModel)]="newsItem.name" name="name" type="text" #name="ngModel" required
+            <ion-input [(ngModel)]="newsItem.name" name="name" type="text" #name="ngModel" required [disabled]="!editMode"
               placeholder="News Title, useful for search">
             </ion-input>
           </ion-item>
@@ -33,35 +33,31 @@
               Title is required
             </p>
           </ion-text>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Valid from</ion-label>
+            <ion-datetime displayFormat="MM/DD/YYYY" placeholder="Select Date" [value]="newsItem.validFrom" [disabled]="!editMode"></ion-datetime>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Valid to</ion-label>
+            <ion-datetime displayFormat="MM/DD/YYYY" placeholder="Select Date" [value]="newsItem.validTo" [disabled]="!editMode"></ion-datetime>
+          </ion-item>
         
           <ion-item>
-            <ion-label position="stacked" color="primary">Description</ion-label>
-            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel"
-              placeholder="Optional details">
-            </ion-input>
-          </ion-item>
-          <ion-text color="danger">
-            <p [hidden]="description.valid || submitted == false" class="ion-padding-start">
-              Password is required
-            </p>
-          </ion-text>
-          <ion-item>
             <ion-label position="stacked" color="primary">Overview image</ion-label> 
-            <ion-input type="file" name="image" (change)="fileProgress($event)"></ion-input>
+            <ion-input type="file" name="image" (change)="onFileLoaded($event)" [disabled]="!editMode"></ion-input>
         
             <div *ngIf="fileUploadProgress">
               Upload progress: {{ fileUploadProgress }}
             </div>
-            <div class="image-preview mb-3" *ngIf="previewUrl">
-              <img [src]="previewUrl" height="300" />
+
+            <div class="image-preview" *ngIf="newsItem.overviewImageBase64">
+              <img [src]="newsItem.overviewImageBase64" height="150" />
             </div>
-            <div class="mb-3" *ngIf="uploadedFilePath">
-              {{uploadedFilePath}}
-            </div>
+
           </ion-item>
           <ion-item>
             <ion-label position="stacked" color="primary">Detail image</ion-label>
-            <ion-input type="file" name="image" (change)="detailProgress($event)"></ion-input>
+            <ion-input type="file" name="image" (change)="detailProgress($event)" [disabled]="!editMode"></ion-input>
 
             <div *ngIf="detailUploadProgress">
               Upload progress: {{ detailUploadProgress }}
@@ -75,6 +71,19 @@
               {{uploadedDetailFilePath}}
             </div>
           </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked" color="primary">Description</ion-label>
+            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel" [disabled]="!editMode"
+              placeholder="Optional details">
+            </ion-input>
+          </ion-item>
+          <ion-text color="danger">
+            <p [hidden]="description.valid || submitted == false" class="ion-padding-start">
+              Password is required
+            </p>
+          </ion-text>
+
         </ion-list>
     
         <!-- <div class="ion-padding">

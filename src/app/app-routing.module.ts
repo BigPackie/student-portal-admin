@@ -22,6 +22,10 @@ const routes: Routes = [
   {
     path: 'news-edit/:id',
     loadChildren: () => import('./news-edit/news-edit.module').then( m => m.NewsEditPageModule)
+  },
+  {
+    path: 'news-edit',
+    loadChildren: () => import('./news-edit/news-edit.module').then( m => m.NewsEditPageModule)
   }
 
 ];
