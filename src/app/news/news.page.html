@@ -7,12 +7,10 @@
     <ion-title>News</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (click)="presentFilter()">
-        <span *ngIf="ios">Filter</span>
-        <span *ngIf="!ios">
-          <ion-icon slot="icon-only" name="options"></ion-icon>
-        </span>
-      </ion-button>
+     <ion-button [routerLink]="['/news-edit']">
+       Add
+       <ion-icon slot="end" name="add"></ion-icon>
+     </ion-button>
     </ion-buttons>
   </ion-toolbar>
 

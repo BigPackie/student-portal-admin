@@ -25,17 +25,17 @@ export class DataService {
         console.log(`Loaded img: ${img}`);
         newsItem.overviewImageBase64 = img.data;
         console.log(`newsItem.overviewImageBase64 ${newsItem.overviewImageBase64}`)
-        return this.databaseService.createNewsItem(newsItem);
+        return this.databaseService.saveNewsItem(newsItem);
       })
     )
   }
 
-  createNewsItemDetails(newsItemDetail: any): Observable<any> {
-    return this.databaseService.createNewsItemDetail(newsItemDetail);
+  saveNewsItemDetails(newsItemDetail: any): Observable<any> {
+    return this.databaseService.saveNewsItemDetail(newsItemDetail);
   }
 
-  createNewsItemManually(newsItem: any): Observable<any> {
-    return this.databaseService.createNewsItem(newsItem);
+  saveNewsItem(newsItem: any): Observable<any> {
+    return this.databaseService.saveNewsItem(newsItem);
   }
 
   //TODO: maybe it should continuously receive the data  1 by 1 and not return together as a field.

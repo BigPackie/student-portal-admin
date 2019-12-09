@@ -22,7 +22,7 @@ export class DatabaseService {
     return this.http.get("http://localhost:3000/database/newsDetail", { params: { "id": id } }).pipe(catchError(this.handleError));;
   }
 
-  createNewsItem(newsItem: any): Observable<any> {
+  saveNewsItem(newsItem: any): Observable<any> {
     return this.http.post('http://localhost:3000/database/newsItem', { ...newsItem }, {
       reportProgress: true,
       observe: 'events'   
@@ -30,7 +30,7 @@ export class DatabaseService {
       .pipe(catchError(this.handleError));
   }
 
-  createNewsItemDetail(newsItemDetail: any): Observable<any> {
+  saveNewsItemDetail(newsItemDetail: any): Observable<any> {
     return this.http.post('http://localhost:3000/database/newsDetail', { ...newsItemDetail }, {
       reportProgress: true,
       observe: 'events'   

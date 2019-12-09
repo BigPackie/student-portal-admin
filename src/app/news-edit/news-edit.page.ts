@@ -3,14 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavigationStart } from "@angular/router";
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { Event as NavigationEvent } from "@angular/router";
-import { filter, take, finalize, switchMap, tap } from 'rxjs/operators';
+import { filter, take, finalize, switchMap, tap, catchError, concatMap } from 'rxjs/operators';
 import { DataService } from '../services/data.service';
 import { NgForm } from '@angular/forms';
 import { NewsItem } from '../models/news.item';
 import { NewsItemDetail } from '../models/news.item.detail';
 import { HttpEventType } from '@angular/common/http';
 import { LocalFilesService } from '../services/localFiles.service';
-import { concat, throwError, Observable, Subscriber } from 'rxjs';
+import { concat, throwError, Observable, Subscriber, of } from 'rxjs';
 
 @Component({
   selector: 'app-news-edit',
@@ -31,6 +31,10 @@ export class NewsEditPage implements OnInit {
 
   submitted = false;
 
+  newsItemDetailUploadProgress: number = 0;
+  newsItemUploadProgress: number = 0;
+  newsItemSavedId: string;
+
   constructor(private route: ActivatedRoute,
               private alertController: AlertController, 
               private router:Router,
@@ -44,6 +48,11 @@ export class NewsEditPage implements OnInit {
 
   ngOnInit() {
     this.newsId = this.route.snapshot.paramMap.get('id');
+
+    //we are adding new news item
+    if(!this.newsId){
+      this.editMode = true;
+    }
   }
 
   ionViewWillEnter(){
@@ -51,6 +60,12 @@ export class NewsEditPage implements OnInit {
   }
 
   async loadNewsData(){
+
+    //we are adding new news item
+    if(!this.newsId){
+      return;
+    }
+
     const loading = await this.loadingController.create({
       message: 'Getting news data',
     });
@@ -105,7 +120,7 @@ export class NewsEditPage implements OnInit {
     this.editMode = true;
   }
 
-  async onSave(){  
+  async onSave() {
     //console.log(`valid form, do stuff`);
 
     const saving = await this.loadingController.create({
@@ -121,17 +136,74 @@ export class NewsEditPage implements OnInit {
       duration: 3000
     });
 
+    // concat(
+    //   this.saveNewsItem(),
+    //   this.saveNewsItemDetail()
+    // ).pipe(
+    //   catchError(this.savingFailed),
+    //   finalize(() => saving.dismiss())
+    // ).subscribe(res => {
+    //   saveToast.present();
+    //   this.editMode = false;
+    //   if(!this.newsId){
+    //     this.redirectOnAdding();
+    //   }
+    // });
 
-    //TODO: save news item details
+    //TODO: needs refactoring, note returning http progress of uploading makes the observables fire more time
+    //should wait for first observable to fnish completely (don't emit any more)
     this.saveNewsItem()
-    .pipe(
-      finalize(() => saving.dismiss())
-    )
-    .subscribe( res => {
-      saveToast.present();
-      this.editMode = false;
+      .pipe(
+        catchError((err) => this.savingFailed(`Saving of news item failed.`)),
+        finalize(() => saving.dismiss())
+      ).subscribe(res => {
+        if(res.type === HttpEventType.Response){
+          console.log(`Saving news fnished sucessfully, going to save details...`);
+          this.saveNewsItemDetail()
+          .pipe(
+            catchError((err) => this.savingFailed(`Saving of news item detail failed.`)),
+          ).subscribe(res => {
+            if(res.type === HttpEventType.Response){
+              saveToast.present();
+              this.editMode = false;
+              if (!this.newsId) {
+                this.redirectOnAdding();
+              }
+            }
+          })
+        }
+      });
+
+    // of()
+    // .pipe(
+    //   concatMap(() => this.saveNewsItem().pipe(take(1))),
+    //   concatMap(() => this.saveNewsItemDetail().pipe(take(1))),
+    //   catchError(this.savingFailed),
+    //   finalize(() => saving.dismiss()),
+    // )
+    // .subscribe(res => {
+    //   saveToast.present();
+    //   this.editMode = false;
+    //   if(!this.newsId){
+    //     this.redirectOnAdding();
+    //   }
+    // });
+  }
+
+  redirectOnAdding(){
+    this.router.navigate(['/news-edit/' + this.newsItem._id]);
+  }
+
+  async savingFailed(error: any) {
+    console.log('Saving failed:' + error);
+    const savingFailedToast = await this.toastController.create({
+      header: 'Saving failed',
+      message: error,
+      position: 'top',
+      showCloseButton : true
     });
 
+    savingFailedToast.present();
   }
 
   private onCancel(){
@@ -181,24 +253,23 @@ export class NewsEditPage implements OnInit {
 
     await alert.present();
   }
-
-
-    //TODO: manual file uploading, put it into own component
-    fileUploadProgress: string = null;
-    newsItemSavedId: string;
   
    
-  onFileLoaded(fileInput: any) {
+  onFileLoaded(fileInput: any, detail = false) {
     const fileData = <File>fileInput.target.files[0];
     this.localFileService.blobToBase64(fileData).pipe(take(1))
       .subscribe((img: { data: string, type: string }) => {
         console.log(`Loaded img: ${img.type}`);
-        this.newsItem.overviewImageBase64 = img.data;
+        if (detail) {
+          this.newsItemDetail.imageBase64 = img.data;
+        } else {
+          this.newsItem.overviewImageBase64 = img.data;
+        }
       });
   }
     
   saveNewsItem() {
-    this.fileUploadProgress = '0%';
+    this.newsItemUploadProgress = 0.01;
 
     //TODO: handle creation failure
     //TODO: handle new entity/ update entity
@@ -208,95 +279,46 @@ export class NewsEditPage implements OnInit {
       console.log(`Creating newsItem`);
     }
 
-    return this.dataService.createNewsItemManually(this.newsItem)
+    return this.dataService.saveNewsItem(this.newsItem)
       .pipe(
         tap((res) => {
           if (res.type === HttpEventType.UploadProgress) {
-            this.fileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
-            console.log(this.fileUploadProgress);
+            this.newsItemUploadProgress = Number((res.loaded / res.total).toFixed(2));
+            console.log('Uploading news item: ' + this.newsItemUploadProgress);
           } else if (res.type === HttpEventType.Response) {
-            this.fileUploadProgress = '';
-            this.newsItemSavedId = res.body._id;
-            console.log(res);
+            this.newsItemUploadProgress = 0;
+            this.newsItem = res.body;
+            console.log('News item succesfully saved');
           }
         })
       );
   }
   
-    //end of manual file uploading
-  
-     //TODO: manual file uploading, put it into own component
-     detailFileData: File = null;
-     detailPreviewUrl:any = null;
-     detailFileUploadProgress: string = null;
-     uploadedDetailFilePath: string = null;
-     detailImageReady : boolean = false;
-  
-     selectedNewsId: string;
-   
-     newsDetailItemSavedId: string;
-   
-    
-     detailProgress(fileInput: any) {
-           this.detailFileData = <File>fileInput.target.files[0];
-           this.detailPreview();
-     }
-    
-     detailPreview() {
-         // Show preview 
-         var mimeType = this.detailFileData.type;
-         if (mimeType.match(/image\/*/) == null) {
-           return;
-         }
-     
-         var reader = new FileReader();      
-         reader.readAsDataURL(this.detailFileData); 
-         reader.onload = (_event) => { 
-           this.detailPreviewUrl = reader.result; 
-           this.detailImageReady = true;
-         }
-     }
-     
-     //TODO temporar solution, should be refactored
-     onSubmitDetail() {
-         const formData = new FormData();
-           formData.append('file', this.detailFileData);
-           // this.dataService.post('url/to/your/api', formData)
-           //   .subscribe(res => {
-           //     console.log(res);
-           //     this.uploadedFilePath = res.data.filePath;
-           //     alert('SUCCESS !!');
-           //   })
-   
-           this.detailFileUploadProgress = '0%';
-   
-           let newsItemDetail = {
-             _id: this.selectedNewsId,
-             description:"some optional details description",  
-             imageBase64: this.detailPreviewUrl,   //added when picture is loaded
-            // testArray: new Array(20000000)  //to simulate high payload, so that progress is visible
-           };
-   
-           //TODO: handle creation failure
-           console.log(`Creating newsItemDetail ${newsItemDetail}`);
-           this.dataService.createNewsItemDetails(newsItemDetail).subscribe((res) => {
-             if(res.type === HttpEventType.UploadProgress) {
-               this.detailFileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
-               this.newsDetailItemSavedId = '';
-               console.log(this.detailFileUploadProgress);
-             } else if (res.type === HttpEventType.Response) {
-               this.detailFileUploadProgress = '';
-               this.newsDetailItemSavedId = res.body._id;
-               console.log(res);      
-               alert('NewsDetail succesfully saved!');
-             }
-           
-           });
-   
-           this.detailImageReady = false;
-     }
-   
-     //end of manual file uploading
-   
+  saveNewsItemDetail() {
+    this.newsItemDetailUploadProgress = 0.01;
 
+    //TODO: handle creation failure
+    //TODO: handle new entity/ update entity
+    if (this.newsItemDetail._id) {
+      console.log(`Updating newsItemDetails with id ${this.newsItemDetail._id}`);
+    } else {
+      console.log(`Creating newsItemDetails`);
+    }
+
+    this.newsItemDetail._id = this.newsItem._id; //id of those object should be same
+
+    return this.dataService.saveNewsItemDetails(this.newsItemDetail)
+      .pipe(
+        tap((res) => {
+          if (res.type === HttpEventType.UploadProgress) {
+            this.newsItemDetailUploadProgress = Number((res.loaded / res.total).toFixed(2));
+            console.log('Uplaoding news item detail: ' + this.newsItemDetailUploadProgress);
+          } else if (res.type === HttpEventType.Response) {
+            this.newsItemDetailUploadProgress = 0;
+            this.newsItemDetail = res.body;
+            console.log('News item detail succesfully saved');
+          }
+        })
+      );
+  }
 }

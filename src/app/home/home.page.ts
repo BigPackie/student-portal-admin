@@ -55,7 +55,7 @@ export class HomePage {
     let newsDetails = {...this.testNewsItemDetails};
     console.log(`using ${this.addeItemId} for newsDetailID`)
     newsDetails['_id'] = this.addeItemId;
-    this.dataService.createNewsItemDetails(newsDetails).subscribe((res) => {
+    this.dataService.saveNewsItemDetails(newsDetails).subscribe((res) => {
       //TODO: handle creation failure
       this.addeItemDetailId = res._id
       console.log(res);
@@ -115,7 +115,7 @@ export class HomePage {
 
         //TODO: handle creation failure
         console.log(`Creating newsItem ${newsItem}`);
-        this.dataService.createNewsItemManually(newsItem).subscribe((res) => {
+        this.dataService.saveNewsItem(newsItem).subscribe((res) => {
           if(res.type === HttpEventType.UploadProgress) {
             this.fileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
             console.log(this.fileUploadProgress);
@@ -188,7 +188,7 @@ export class HomePage {
  
          //TODO: handle creation failure
          console.log(`Creating newsItemDetail ${newsItemDetail}`);
-         this.dataService.createNewsItemDetails(newsItemDetail).subscribe((res) => {
+         this.dataService.saveNewsItemDetails(newsItemDetail).subscribe((res) => {
            if(res.type === HttpEventType.UploadProgress) {
              this.detailFileUploadProgress = Math.round(res.loaded / res.total * 100) + '%';
              this.newsDetailItemSavedId = '';
