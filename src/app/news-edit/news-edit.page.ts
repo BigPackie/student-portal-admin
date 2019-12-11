@@ -35,6 +35,8 @@ export class NewsEditPage implements OnInit {
   newsItemUploadProgress: number = 0;
   newsItemSavedId: string;
 
+  today;
+
   constructor(private route: ActivatedRoute,
               private alertController: AlertController, 
               private router:Router,
@@ -47,6 +49,7 @@ export class NewsEditPage implements OnInit {
   }
 
   ngOnInit() {
+    this.setMinDate();
     this.newsId = this.route.snapshot.paramMap.get('id');
 
     //we are adding new news item
@@ -57,6 +60,10 @@ export class NewsEditPage implements OnInit {
 
   ionViewWillEnter(){
     this.loadNewsData();
+  }
+
+  setMinDate(){
+    this.today = new Date().toISOString();
   }
 
   async loadNewsData(){
@@ -150,18 +157,19 @@ export class NewsEditPage implements OnInit {
     //   }
     // });
 
-    //TODO: needs refactoring, note returning http progress of uploading makes the observables fire more time
+    //TODO: needs refactoring (looks ugly, error catching is duplicate),
+    // note returning http progress of uploading makes the observables fire more time
     //should wait for first observable to fnish completely (don't emit any more)
     this.saveNewsItem()
       .pipe(
-        catchError((err) => this.savingFailed(`Saving of news item failed.`)),
-        finalize(() => saving.dismiss())
+        catchError((err) => this.savingFailed(`Saving of news item failed.`, saving))
       ).subscribe(res => {
         if(res.type === HttpEventType.Response){
           console.log(`Saving news fnished sucessfully, going to save details...`);
           this.saveNewsItemDetail()
           .pipe(
-            catchError((err) => this.savingFailed(`Saving of news item detail failed.`)),
+            catchError((err) => this.savingFailed(`Saving of news item detail failed.`, saving)),
+            finalize(() => saving.dismiss())
           ).subscribe(res => {
             if(res.type === HttpEventType.Response){
               saveToast.present();
@@ -194,8 +202,11 @@ export class NewsEditPage implements OnInit {
     this.router.navigate(['/news-edit/' + this.newsItem._id]);
   }
 
-  async savingFailed(error: any) {
+  async savingFailed(error: any, savingLoading: HTMLIonLoadingElement) {
     console.log('Saving failed:' + error);
+
+    savingLoading.dismiss();
+    
     const savingFailedToast = await this.toastController.create({
       header: 'Saving failed',
       message: error,
@@ -234,8 +245,8 @@ export class NewsEditPage implements OnInit {
 
   async presentCancelConfirm() {
     const alert = await this.alertController.create({
-      header: 'Cancel changes?',
-      message: 'Without saving <strong>all changes will be lost</strong> <strong><i> forever </i></strong>.',
+      header: 'Exit edit mode?',
+      message: 'Changes are temporarily visible, but without saving then will disapper on page reload. <br><strong>Exit edit mode?</strong>',
       backdropDismiss: false,
       buttons: [
         {
@@ -272,7 +283,6 @@ export class NewsEditPage implements OnInit {
     this.newsItemUploadProgress = 0.01;
 
     //TODO: handle creation failure
-    //TODO: handle new entity/ update entity
     if (this.newsItem._id) {
       console.log(`Updating newsItem with id ${this.newsItem._id}`);
     } else {
@@ -298,7 +308,6 @@ export class NewsEditPage implements OnInit {
     this.newsItemDetailUploadProgress = 0.01;
 
     //TODO: handle creation failure
-    //TODO: handle new entity/ update entity
     if (this.newsItemDetail._id) {
       console.log(`Updating newsItemDetails with id ${this.newsItemDetail._id}`);
     } else {

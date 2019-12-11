@@ -21,6 +21,10 @@ export class NewsPage implements OnInit {
   constructor(private dataService: DataService, private alertController: AlertController) { }
 
   ngOnInit() {
+    
+  }
+
+  ionViewWillEnter(){
     this.loadNews();
   }
 

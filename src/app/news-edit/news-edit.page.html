@@ -48,11 +48,13 @@
           </ion-text>
           <ion-item>
             <ion-label position="stacked" color="primary">Valid from</ion-label>
-            <ion-datetime displayFormat="MM/DD/YYYY" placeholder="Select Date" [(ngModel)]="newsItem.validFrom" name="validFrom" [disabled]="!editMode"></ion-datetime>
+            <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" placeholder="Select Date"
+              [(ngModel)]="newsItem.validFrom" name="validFrom" [disabled]="!editMode" [min]="today" max="2030-01-01"></ion-datetime>
           </ion-item>
           <ion-item>
             <ion-label position="stacked" color="primary">Valid to</ion-label>
-            <ion-datetime displayFormat="MM/DD/YYYY" placeholder="Select Date" [(ngModel)]="newsItem.validTo" name="validTo" [disabled]="!editMode"></ion-datetime>
+            <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" placeholder="Select Date" 
+              [(ngModel)]="newsItem.validTo" name="validTo" [disabled]="!editMode" [min]="newsItem.validFrom" max="2030-01-01"></ion-datetime>
           </ion-item>
         
           <ion-item>
