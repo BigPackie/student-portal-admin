@@ -51,4 +51,12 @@ export class DataService {
     return this.databaseService.getNewsItemDetail(id);
   }
 
+  deleteNewsItem(id: any): Observable<any> {
+    return this.databaseService.deleteNews(id);
+  }
+
+  undeleteNewsItem(id: any): Observable<any> {
+    return this.databaseService.undeleteNews(id);
+  }
+
 }

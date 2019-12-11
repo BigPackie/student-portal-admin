@@ -41,7 +41,8 @@
 
 <ion-content>
 
-  <ion-list lines="full" #newsListElement>
+  <ion-list lines="full" #newsListElement *ngIf="news;else newsLoading">
+
     <ion-item *ngFor="let newsItem of news" detail="false">
       <ion-label class="ion-text-wrap">
         <ion-badge *ngIf="newsItem.deleted" color="danger">Deleted</ion-badge>
@@ -52,20 +53,24 @@
         </p>
       </ion-label>
       <div class="img-container" slot="start">
-          <img [src]="newsItem.overviewImageBase64" (error)="showPlaceHolderOnError($event.srcElement)" />
+        <img [src]="newsItem.overviewImageBase64" (error)="showPlaceHolderOnError($event.srcElement)" />
       </div>
-
-        <ion-button (click)="onClick()" color="danger" [disabled]="newsItem.deleted">
-          Delete
-        </ion-button>
-        <ion-button routerLink="/news-edit/{{newsItem._id}}" routerDirection="forward">
-          Details
-        </ion-button>
-      
-    </ion-item> 
-      
-  </ion-list>
-
   
+      <ion-button (click)="presentDeleteConfirm(newsItem._id)" color="danger" *ngIf="!newsItem.deleted">
+        Delete
+      </ion-button>
+      <ion-button (click)="presentUndeleteConfirm(newsItem._id)" color="warning" *ngIf="newsItem.deleted">
+        Undelete
+      </ion-button>
+      <ion-button routerLink="/news-edit/{{newsItem._id}}" routerDirection="forward">
+        Details
+      </ion-button>
+    </ion-item>
 
+  </ion-list>
 </ion-content>
+
+<ng-template #newsLoading><div class="ion-text-center">
+    <ion-spinner></ion-spinner>
+    <div>Loading news...</div>
+</div></ng-template> <!--this does not handle error state of the observable-->

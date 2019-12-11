@@ -30,6 +30,16 @@ export class DatabaseService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteNews(id: string): Observable<any> {
+    return this.http.post('http://localhost:3000/database/newsItem/delete', { "id": id })
+      .pipe(catchError(this.handleError));
+  }
+
+  undeleteNews(id: string): Observable<any> {
+    return this.http.post('http://localhost:3000/database/newsItem/undelete', { "id": id })
+      .pipe(catchError(this.handleError));
+  }
+
   saveNewsItemDetail(newsItemDetail: any): Observable<any> {
     return this.http.post('http://localhost:3000/database/newsDetail', { ...newsItemDetail }, {
       reportProgress: true,
