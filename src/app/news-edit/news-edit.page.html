@@ -19,9 +19,7 @@
 </ion-header>
 
 <ion-content>
-
     <form #newsEditForm="ngForm" novalidate>
-
         <ion-list lines="none">
           <ion-item *ngIf="newsItemUploadProgress">
             <ion-note slot="start">
@@ -69,29 +67,28 @@
           <ion-item>
             <ion-label position="stacked" color="primary">Detail image</ion-label>
             <ion-input type="file" name="image" (change)="onFileLoaded($event, true)" [disabled]="!editMode"></ion-input>
+            <ion-button (click)="removeDetailImage()" *ngIf="newsItemDetail.imageBase64 && editMode">Remove image</ion-button>
+            
 
             <div class="image-preview" *ngIf="newsItemDetail.imageBase64">
               <img [src]="newsItemDetail.imageBase64" height="300" />
             </div>
           </ion-item>
+          <ion-text color="danger" *ngIf="!newsItemDetail.imageBase64">
+              <p class="ion-padding-start">
+                If no detail image chosen, only description text will be shown to users.
+              </p>
+            </ion-text>
 
-          <ion-item>
+          <div class="ion-margin quill-editor-container">
             <ion-label position="stacked" color="primary">Description</ion-label>
-            <ion-input [(ngModel)]="newsItemDetail.description" name="description" type="text" #description="ngModel" [disabled]="!editMode"
-              placeholder="Optional details">
-            </ion-input>
-          </ion-item>
-          <ion-text color="danger">
-            <p [hidden]="description.valid || submitted == false" class="ion-padding-start">
-              Password is required
-            </p>
-          </ion-text>
-
+            <quill-editor name="description" [(ngModel)]="newsItemDetail.description" [sanitize]="true" [disabled]="!editMode"></quill-editor>
+          </div>
         </ion-list>
-    
         <!-- <div class="ion-padding">
           <ion-button (click)="onSignup(signupForm)" type="submit" expand="block">Create</ion-button>
         </div> -->
       </form>
+      
 
 </ion-content>

@@ -246,7 +246,7 @@ export class NewsEditPage implements OnInit {
   async presentCancelConfirm() {
     const alert = await this.alertController.create({
       header: 'Exit edit mode?',
-      message: 'Changes are temporarily visible, but without saving then will disapper on page reload. <br><strong>Exit edit mode?</strong>',
+      message: 'Changes are temporarily visible but without saving they will disapper on page reload. <br><strong>Exit edit mode?</strong>',
       backdropDismiss: false,
       buttons: [
         {
@@ -329,5 +329,9 @@ export class NewsEditPage implements OnInit {
           }
         })
       );
+  }
+
+  removeDetailImage(){
+    this.newsItemDetail.imageBase64 = "";
   }
 }
