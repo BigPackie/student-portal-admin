@@ -8,22 +8,28 @@ import { tap, catchError } from 'rxjs/operators';
 })
 export class DatabaseService {
 
+  readonly dbServicesUrl: string = "http://localhost:3000/database/";
+
   constructor(private http: HttpClient) { }
 
   getNews(): Observable<any> {
-    return this.http.get('http://localhost:3000/database/news');
+    return this.http.get(this.dbServicesUrl + 'news');
+  }
+
+  getActiveNews(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'news/active');
   }
 
   getNewsItem(id: string): Observable<any> {
-    return this.http.get("http://localhost:3000/database/newsItem", { params: { "id": id } }).pipe(catchError(this.handleError));;
+    return this.http.get(this.dbServicesUrl + "newsItem", { params: { "id": id } }).pipe(catchError(this.handleError));;
   }
 
   getNewsItemDetail(id: string): Observable<any> {
-    return this.http.get("http://localhost:3000/database/newsDetail", { params: { "id": id } }).pipe(catchError(this.handleError));;
+    return this.http.get(this.dbServicesUrl + "newsDetail", { params: { "id": id } }).pipe(catchError(this.handleError));;
   }
 
   saveNewsItem(newsItem: any): Observable<any> {
-    return this.http.post('http://localhost:3000/database/newsItem', { ...newsItem }, {
+    return this.http.post(this.dbServicesUrl + 'newsItem', { ...newsItem }, {
       reportProgress: true,
       observe: 'events'   
     })
@@ -31,17 +37,17 @@ export class DatabaseService {
   }
 
   deleteNews(id: string): Observable<any> {
-    return this.http.post('http://localhost:3000/database/newsItem/delete', { "id": id })
+    return this.http.post(this.dbServicesUrl + 'newsItem/delete', { "id": id })
       .pipe(catchError(this.handleError));
   }
 
   undeleteNews(id: string): Observable<any> {
-    return this.http.post('http://localhost:3000/database/newsItem/undelete', { "id": id })
+    return this.http.post(this.dbServicesUrl + 'newsItem/undelete', { "id": id })
       .pipe(catchError(this.handleError));
   }
 
   saveNewsItemDetail(newsItemDetail: any): Observable<any> {
-    return this.http.post('http://localhost:3000/database/newsDetail', { ...newsItemDetail }, {
+    return this.http.post(this.dbServicesUrl + 'newsDetail', { ...newsItemDetail }, {
       reportProgress: true,
       observe: 'events'   
     })

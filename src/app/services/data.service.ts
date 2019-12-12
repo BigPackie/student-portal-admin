@@ -47,6 +47,10 @@ export class DataService {
     return this.databaseService.getNews();
   }
 
+  getActiveNews(): Observable<any> {
+    return this.databaseService.getActiveNews();
+  }
+
   getNewsItem(id : any): Observable<any> {
     return this.databaseService.getNewsItem(id);
   }

@@ -25,18 +25,50 @@ export class NewsPage implements OnInit {
   }
 
   ionViewWillEnter(){
-    this.loadNews();
+    this.updateNews();
   }
 
   updateNews(){
+    switch(this.segmentFilter){
+      case 'active': {
+        this.loadActiveNews();
+        break;
+      }
+      case 'recent':
+      case 'changed':
+      case 'finished': {
+        this.loadOtherNews();
+        break;
+      }
+      default: {
+        this.loadAllNews();
+        break;
+      }
+    }
 
   }
 
-  //TODO: load already filtered news based on query
-  loadNews(){
+  loadOtherNews(){
+    this.news = undefined;
+    console.warn('Not yet implemented!');
+  }
+
+  loadAllNews(){
+    console.log("loading all news...");
     this.news = undefined; //just to show the `Loading news spinner`, cause it will not show if the array is empty, only if the array is null or undefined
     this.dataService.getNews().pipe(take(1))
       .subscribe((res) => {
+        console.log(`Loaded ${res.length} news`)
+        this.news = res;
+      });
+  }
+
+  loadActiveNews(){
+    console.log("loading active news...");
+    this.news = undefined; //just to show the `Loading news spinner`, cause it will not show if the array is empty, only if the array is null or undefined
+    this.dataService.getActiveNews().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} news`)
         this.news = res;
       });
   }
@@ -90,11 +122,11 @@ export class NewsPage implements OnInit {
   }
 
   onUndelete(id){
-    this.dataService.undeleteNewsItem(id).pipe(take(1)).subscribe(() => this.loadNews());
+    this.dataService.undeleteNewsItem(id).pipe(take(1)).subscribe(() => this.updateNews());
   }
 
   onDelete(id: string){
-    this.dataService.deleteNewsItem(id).pipe(take(1)).subscribe(() => this.loadNews());
+    this.dataService.deleteNewsItem(id).pipe(take(1)).subscribe(() => this.updateNews());
   }
 
 
