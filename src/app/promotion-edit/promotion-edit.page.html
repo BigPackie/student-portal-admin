@@ -1,0 +1,95 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+           <ion-buttons slot="start">
+             <ion-back-button></ion-back-button>
+           </ion-buttons>
+        </ion-buttons>
+      <ion-title>Details of {{promotionId}}</ion-title>
+      <ion-button *ngIf="!editMode" (click)="onEdit()" slot="end" color="warning">
+        Edit
+      </ion-button>
+      <ion-button *ngIf="editMode" (click)="presentCancelConfirm()" slot="end" color="warning">
+          Cancel
+      </ion-button>
+      <ion-button *ngIf="editMode" (click)="presentSaveConfirm()" slot="end" color="success">
+          Save
+      </ion-button>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+      <form #promotionEditForm="ngForm" novalidate>
+          <ion-list lines="none">
+            <ion-item *ngIf="promotionUploadProgress">
+              <ion-note slot="start">
+                  Promotion upload progress:
+              </ion-note>
+              <ion-progress-bar color="primary" [value]="promotionUploadProgress"></ion-progress-bar>
+            </ion-item>
+            <ion-item *ngIf="promotionDetailUploadProgress">
+                <ion-note slot="start">
+                    Promotion detail upload progress:
+                </ion-note>
+                <ion-progress-bar color="primary" [value]="promotionDetailUploadProgress"></ion-progress-bar>
+              </ion-item>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Promotion Title</ion-label>
+              <ion-input [(ngModel)]="promotion.name" name="name" type="text" #name="ngModel" required [disabled]="!editMode"
+                placeholder="Promotion Title, useful for search">
+              </ion-input>
+            </ion-item>
+            <ion-text color="danger">
+              <p [hidden]="name.valid || submitted == false" class="ion-padding-start">
+                Title is required
+              </p>
+            </ion-text>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Valid from</ion-label>
+              <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" placeholder="Select Date"
+                [(ngModel)]="promotion.validFrom" name="validFrom" [disabled]="!editMode" [min]="today" max="2030-01-01"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Valid to</ion-label>
+              <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" placeholder="Select Date" 
+                [(ngModel)]="promotion.validTo" name="validTo" [disabled]="!editMode" [min]="promotion.validFrom" max="2030-01-01"></ion-datetime>
+            </ion-item>
+          
+            <ion-item>
+              <ion-label position="stacked" color="primary">Overview image</ion-label> 
+              <ion-input type="file" name="image" (change)="onFileLoaded($event)" [disabled]="!editMode"></ion-input>
+  
+              <div class="image-preview" *ngIf="promotion.overviewImageBase64">
+                <img [src]="promotion.overviewImageBase64" height="150" />
+              </div>
+  
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked" color="primary">Detail image</ion-label>
+              <ion-input type="file" name="image" (change)="onFileLoaded($event, true)" [disabled]="!editMode"></ion-input>
+              <ion-button (click)="removeDetailImage()" *ngIf="promotionDetail.imageBase64 && editMode">Remove image</ion-button>
+              
+  
+              <div class="image-preview" *ngIf="promotionDetail.imageBase64">
+                <img [src]="promotionDetail.imageBase64" height="300" />
+              </div>
+            </ion-item>
+            <ion-text color="danger" *ngIf="!promotionDetail.imageBase64">
+                <p class="ion-padding-start">
+                  If no detail image chosen, only description text will be shown to users.
+                </p>
+              </ion-text>
+  
+            <div class="ion-margin quill-editor-container">
+              <ion-label position="stacked" color="primary">Description</ion-label>
+              <quill-editor name="description" [(ngModel)]="promotionDetail.description" [sanitize]="true" [disabled]="!editMode"></quill-editor>
+            </div>
+          </ion-list>
+          <!-- <div class="ion-padding">
+            <ion-button (click)="onSignup(signupForm)" type="submit" expand="block">Create</ion-button>
+          </div> -->
+        </form>
+        
+  
+  </ion-content>
+  

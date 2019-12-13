@@ -1,0 +1,14 @@
+ion-item .img-container {
+    padding-bottom: 2px;
+    padding-top: 2px;
+    height: 10vw;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-item .img-container>img {
+    max-height: 100%;
+    max-width: 100%;
+}

@@ -12,20 +12,26 @@ export class DatabaseService {
 
   constructor(private http: HttpClient) { }
 
+  // --- news ---
+
   getNews(): Observable<any> {
-    return this.http.get(this.dbServicesUrl + 'news');
+    return this.http.get(this.dbServicesUrl + 'news')
+    .pipe(catchError(this.handleError));
   }
 
   getActiveNews(): Observable<any> {
-    return this.http.get(this.dbServicesUrl + 'news/active');
+    return this.http.get(this.dbServicesUrl + 'news/active')
+    .pipe(catchError(this.handleError));
   }
 
   getNewsItem(id: string): Observable<any> {
-    return this.http.get(this.dbServicesUrl + "newsItem", { params: { "id": id } }).pipe(catchError(this.handleError));;
+    return this.http.get(this.dbServicesUrl + "newsItem", { params: { "id": id } })
+    .pipe(catchError(this.handleError));
   }
 
   getNewsItemDetail(id: string): Observable<any> {
-    return this.http.get(this.dbServicesUrl + "newsDetail", { params: { "id": id } }).pipe(catchError(this.handleError));;
+    return this.http.get(this.dbServicesUrl + "newsDetail", { params: { "id": id } })
+    .pipe(catchError(this.handleError));
   }
 
   saveNewsItem(newsItem: any): Observable<any> {
@@ -54,6 +60,57 @@ export class DatabaseService {
       .pipe(catchError(this.handleError));
   }
 
+  // --- news end---
+
+  // --- promotions ---
+
+  getPromotions(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'promotions')
+    .pipe(catchError(this.handleError));
+  }
+
+  getActivePromotions(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'promotions/active')
+    .pipe(catchError(this.handleError));
+  }
+
+  getPromotion(id: string): Observable<any> {
+    return this.http.get(this.dbServicesUrl + "promotion", { params: { "id": id } })
+    .pipe(catchError(this.handleError));;
+  }
+
+  getPromotionDetail(id: string): Observable<any> {
+    return this.http.get(this.dbServicesUrl + "promotionDetail", { params: { "id": id } })
+    .pipe(catchError(this.handleError));;
+  }
+
+  savePromotion(promotion: any): Observable<any> {
+    return this.http.post(this.dbServicesUrl + 'promotion', { ...promotion }, {
+      reportProgress: true,
+      observe: 'events'   
+    })
+      .pipe(catchError(this.handleError));
+  }
+
+  deletePromotion(id: string): Observable<any> {
+    return this.http.post(this.dbServicesUrl + 'promotion/delete', { "id": id })
+      .pipe(catchError(this.handleError));
+  }
+
+  undeletePromotion(id: string): Observable<any> {
+    return this.http.post(this.dbServicesUrl + 'promotion/undelete', { "id": id })
+      .pipe(catchError(this.handleError));
+  }
+
+  savePromotionDetail(promotionDetail: any): Observable<any> {
+    return this.http.post(this.dbServicesUrl + 'promotionDetail', { ...promotionDetail }, {
+      reportProgress: true,
+      observe: 'events'   
+    })
+      .pipe(catchError(this.handleError));
+  }
+
+  // --- promotions end---
 
   //TODO: globaly in interceptor?
   handleError(error) {

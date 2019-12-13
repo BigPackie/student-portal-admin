@@ -7,7 +7,7 @@ import { filter, take, finalize, switchMap, tap, catchError, concatMap } from 'r
 import { DataService } from '../services/data.service';
 import { NgForm } from '@angular/forms';
 import { NewsItem } from '../models/news.item';
-import { NewsItemDetail } from '../models/news.item.detail';
+import { NewsItemDetail } from "../models/news.item.detail";
 import { HttpEventType } from '@angular/common/http';
 import { LocalFilesService } from '../services/localFiles.service';
 import { concat, throwError, Observable, Subscriber, of } from 'rxjs';

@@ -20,6 +20,8 @@ export class DataService {
 
    }
 
+  // --- news ---
+
   createNewsItem(newsItem: any): Observable<any> {
     return this.localFilesService.getImage(undefined, newsItem.overviewImagePath).pipe(
       mergeMap((img: {data: string, type: string}) => {
@@ -66,6 +68,59 @@ export class DataService {
   undeleteNewsItem(id: any): Observable<any> {
     return this.databaseService.undeleteNews(id);
   }
+
+  // --- end news ---
+
+  // --- promotions ---
+
+  createPromotion(promotion: any): Observable<any> {
+    return this.localFilesService.getImage(undefined, promotion.overviewImagePath).pipe(
+      mergeMap((img: {data: string, type: string}) => {
+        console.log(`Loaded img: ${img}`);
+        promotion.overviewImageBase64 = img.data;
+        console.log(`promotion.overviewImageBase64 ${promotion.overviewImageBase64}`)
+        return this.databaseService.savePromotion(promotion);
+      })
+    )
+  }
+
+  savePromotionDetail(promotionDetail: any): Observable<any> {
+    return this.databaseService.savePromotionDetail(promotionDetail);
+  }
+
+  savePromotion(promotion: any): Observable<any> {
+    promotion.validFrom = this.startOfDay(promotion.validFrom);
+    promotion.validTo = this.endOfDay(promotion.validTo);
+
+    return this.databaseService.savePromotion(promotion);
+  }
+
+  //TODO: maybe it should continuously receive the data  1 by 1 and not return together as a field.
+  getPromotions(): Observable<any> {
+    return this.databaseService.getPromotions();
+  }
+
+  getActivePromotions(): Observable<any> {
+    return this.databaseService.getActivePromotions();
+  }
+
+  getPromotion(id : any): Observable<any> {
+    return this.databaseService.getPromotion(id);
+  }
+
+  getPromotionDetail(id: any): Observable<any> {
+    return this.databaseService.getPromotionDetail(id);
+  }
+
+  deletePromotion(id: any): Observable<any> {
+    return this.databaseService.deletePromotion(id);
+  }
+
+  undeletePromotion(id: any): Observable<any> {
+    return this.databaseService.undeletePromotion(id);
+  }
+
+  // --- end promotions ---
 
 
   startOfDay(dateWithTimeZone: string): string {
