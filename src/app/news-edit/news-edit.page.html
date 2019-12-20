@@ -5,7 +5,8 @@
            <ion-back-button></ion-back-button>
          </ion-buttons>
       </ion-buttons>
-    <ion-title>Details of {{newsId}}</ion-title>
+    <ion-title *ngIf="newsId">Details of {{newsId}}</ion-title>
+    <ion-title *ngIf="!newsId">Creating news</ion-title>
     <ion-button *ngIf="!editMode" (click)="onEdit()" slot="end" color="warning">
       Edit
     </ion-button>
@@ -39,8 +40,8 @@
               placeholder="News Title, useful for search">
             </ion-input>
           </ion-item>
-          <ion-text color="danger">
-            <p [hidden]="name.valid || submitted == false" class="ion-padding-start">
+          <ion-text color="danger" *ngIf="editMode">
+            <p [hidden]="name.valid" class="ion-padding-start">
               Title is required
             </p>
           </ion-text>
@@ -60,7 +61,7 @@
             <ion-input type="file" name="image" (change)="onFileLoaded($event)" [disabled]="!editMode"></ion-input>
 
             <div class="image-preview" *ngIf="newsItem.overviewImageBase64">
-              <img [src]="newsItem.overviewImageBase64" height="150" />
+              <img [src]="newsItem.overviewImageBase64" (error)="showNewsItemErrorPicture($event.srcElement)" height="150" />
             </div>
 
           </ion-item>
@@ -71,10 +72,10 @@
             
 
             <div class="image-preview" *ngIf="newsItemDetail.imageBase64">
-              <img [src]="newsItemDetail.imageBase64" height="300" />
+              <img [src]="newsItemDetail.imageBase64" (error)="showNewsItemDetailErrorPicture($event.srcElement)"  height="300" />
             </div>
           </ion-item>
-          <ion-text color="danger" *ngIf="!newsItemDetail.imageBase64">
+          <ion-text color="danger" *ngIf="editMode && !newsItemDetail.imageBase64">
               <p class="ion-padding-start">
                 If no detail image chosen, only description text will be shown to users.
               </p>

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonList, AlertController } from '@ionic/angular';
 import { DataService } from '../services/data.service';
 import { take } from 'rxjs/operators';
+import { ErrorPictures } from '../services/errorPictures';
 
 @Component({
   selector: 'app-news',
@@ -74,7 +75,7 @@ export class NewsPage implements OnInit {
   }
 
   showPlaceHolderOnError(imgElement) {
-    imgElement.src = "https://via.placeholder.com/300/09f/fff.png%20C/O%20https://placeholder.com/";
+    imgElement.src = ErrorPictures.newsItemErrorPicture;
   }
 
   async presentDeleteConfirm(id: string) {

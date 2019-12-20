@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../services/data.service';
 import { AlertController } from '@ionic/angular';
 import { take } from 'rxjs/operators';
+import { ErrorPictures } from '../services/errorPictures';
 
 @Component({
   selector: 'app-promotions',
@@ -71,7 +72,7 @@ export class PromotionsPage implements OnInit {
 
   //TODO: change placeholder image to local image from assets
   showPlaceHolderOnError(imgElement) {
-    imgElement.src = "https://via.placeholder.com/300/09f/fff.png%20C/O%20https://placeholder.com/";
+    imgElement.src = ErrorPictures.promotionErrorPicture;
   }
 
   async presentDeleteConfirm(id: string) {

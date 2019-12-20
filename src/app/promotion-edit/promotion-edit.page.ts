@@ -9,6 +9,7 @@ import { concat } from 'rxjs';
 import { take, tap, finalize, catchError } from 'rxjs/operators';
 import { HttpEventType } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
+import { ErrorPictures } from '../services/errorPictures';
 
 @Component({
   selector: 'app-promotion-edit',
@@ -281,6 +282,16 @@ export class PromotionEditPage implements OnInit {
 
   removeDetailImage(){
     this.promotionDetail.imageBase64 = "";
+  }
+
+  showPromotionErrorPicture(imgElement) {
+    console.warn("Picture loading failed, probably corrupted data in the database.");
+    imgElement.src = ErrorPictures.promotionErrorPicture;
+  }
+
+  showPromotionDetailErrorPicture(imgElement) {
+    console.warn("Detail picture loading failed, probably corrupted data in the database.");
+    imgElement.src = ErrorPictures.promotionHalfDetailErrorPicture;
   }
 
 }

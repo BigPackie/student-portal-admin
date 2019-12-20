@@ -11,6 +11,7 @@ import { NewsItemDetail } from "../models/news.item.detail";
 import { HttpEventType } from '@angular/common/http';
 import { LocalFilesService } from '../services/localFiles.service';
 import { concat, throwError, Observable, Subscriber, of } from 'rxjs';
+import { ErrorPictures } from '../services/errorPictures';
 
 @Component({
   selector: 'app-news-edit',
@@ -333,5 +334,15 @@ export class NewsEditPage implements OnInit {
 
   removeDetailImage(){
     this.newsItemDetail.imageBase64 = "";
+  }
+
+  showNewsItemErrorPicture(imgElement) {
+    console.warn("Picture loading failed, probably corrupted data in the database.");
+    imgElement.src = ErrorPictures.newsItemErrorPicture;
+  }
+
+  showNewsItemDetailErrorPicture(imgElement) {
+    console.warn("Detail picture loading failed, probably corrupted data in the database.");
+    imgElement.src = ErrorPictures.newsItemHalfDetailErrorPicture;
   }
 }
