@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs'
 import { tap, catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment'
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
 
-  readonly dbServicesUrl: string = "http://localhost:3000/database/";
+  readonly dbServicesUrl: string = environment.newsServicesUrl + "/database/";
 
   constructor(private http: HttpClient) { }
 
