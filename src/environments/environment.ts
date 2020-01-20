@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  newsServicesUrl: "http://10.40.9.80:3000", //TODO: change to correct adress when newsServices finally deployed
+  newsServicesUrl: "http://10.12.4.97:3000", //TODO: change to correct adress when newsServices finally deployed
 };
 
 /*
