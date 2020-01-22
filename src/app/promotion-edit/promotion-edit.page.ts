@@ -170,7 +170,7 @@ export class PromotionEditPage implements OnInit {
     this.editMode = false;
   }
 
-  async presentSaveConfirm(form: NgForm) {
+  async presentSaveConfirm() {
     const alert = await this.alertController.create({
       header: 'Save?',
       message: 'Are you <strong>sure</strong> you want to save changes?',
