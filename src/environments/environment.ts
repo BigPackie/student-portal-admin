@@ -2,9 +2,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+/**
+ * "ng build --prod"  does not work, use normal build for production too
+ */
 export const environment = {
   production: false,
-  newsServicesUrl: "http://10.12.4.97:3000", //TODO: change to correct adress when newsServices finally deployed
+  newsServicesUrl: "http://localhost:3000", //TODO: change to correct adress when newsServices finally deployed
 };
 
 /*
