@@ -80,21 +80,6 @@ export class NewsEditPage implements OnInit {
 
     await loading.present();
 
-    // console.log(`Getting data for news item ${this.newsId}`);
-    // this.dataService.getNewsItem(this.newsId)
-    //   .pipe(
-    //     take(1),
-    //     finalize(() => loading.dismiss()))
-    //   .subscribe(res => {
-    //     console.log(`Title ${res.name}`)
-    //     this.newsItem = { ...res };
-    //     console.log(`Getting data for news detail ${this.newsId}`);
-    //     this.dataService.getNewsItemDetail(this.newsId).pipe(take(1)).subscribe(res => {
-    //       this.newsItemDetail = { ...res };
-    //       this.newsDataLoaded = true;
-    //     });
-    //   });
-
     concat(
       this.dataService.getNewsItem(this.newsId)
         .pipe(
@@ -129,7 +114,6 @@ export class NewsEditPage implements OnInit {
   }
 
   async onSave() {
-    //console.log(`valid form, do stuff`);
 
     const saving = await this.loadingController.create({
       message: 'Saving news data',
@@ -143,20 +127,6 @@ export class NewsEditPage implements OnInit {
       position: 'top',
       duration: 3000
     });
-
-    // concat(
-    //   this.saveNewsItem(),
-    //   this.saveNewsItemDetail()
-    // ).pipe(
-    //   catchError(this.savingFailed),
-    //   finalize(() => saving.dismiss())
-    // ).subscribe(res => {
-    //   saveToast.present();
-    //   this.editMode = false;
-    //   if(!this.newsId){
-    //     this.redirectOnAdding();
-    //   }
-    // });
 
     //TODO: needs refactoring (looks ugly, error catching is duplicate),
     // note returning http progress of uploading makes the observables fire more time
@@ -182,21 +152,6 @@ export class NewsEditPage implements OnInit {
           })
         }
       });
-
-    // of()
-    // .pipe(
-    //   concatMap(() => this.saveNewsItem().pipe(take(1))),
-    //   concatMap(() => this.saveNewsItemDetail().pipe(take(1))),
-    //   catchError(this.savingFailed),
-    //   finalize(() => saving.dismiss()),
-    // )
-    // .subscribe(res => {
-    //   saveToast.present();
-    //   this.editMode = false;
-    //   if(!this.newsId){
-    //     this.redirectOnAdding();
-    //   }
-    // });
   }
 
   redirectOnAdding(){
