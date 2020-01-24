@@ -53,6 +53,18 @@ export class DataService {
     return this.databaseService.getActiveNews();
   }
 
+  getUpcomingNews(): Observable<any> {
+    return this.databaseService.getUpcomingNews();
+  }
+
+  getRecentNews(): Observable<any> {
+    return this.databaseService.getRecentNews();
+  }
+
+  getFinishedNews(): Observable<any> {
+    return this.databaseService.getFinishedNews();
+  }
+
   getNewsItem(id : any): Observable<any> {
     return this.databaseService.getNewsItem(id);
   }
@@ -102,6 +114,18 @@ export class DataService {
 
   getActivePromotions(): Observable<any> {
     return this.databaseService.getActivePromotions();
+  }
+
+  getUpcomingPromotions(): Observable<any> {
+    return this.databaseService.getUpcomingPromotions();
+  }
+
+  getRecentPromotions(): Observable<any> {
+    return this.databaseService.getRecentPromotions();
+  }
+
+  getFinishedPromotions(): Observable<any> {
+    return this.databaseService.getFinishedPromotions();
   }
 
   getPromotion(id : any): Observable<any> {

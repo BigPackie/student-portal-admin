@@ -16,21 +16,21 @@
   
     <ion-toolbar>
       <ion-segment [(ngModel)]="segmentFilter" (ionChange)="updatePromotions()">
-          <ion-segment-button value="active">
-              active
-            </ion-segment-button>
-          <ion-segment-button value="recent">
-              Recently added
-            </ion-segment-button>
-          <ion-segment-button value="changed">
-              Recently changed
-            </ion-segment-button>
-          <ion-segment-button value="finished">
-            Finished
-          </ion-segment-button>
-          <ion-segment-button value="all">
-            All
-          </ion-segment-button>
+        <ion-segment-button value="active">
+          Active
+        </ion-segment-button>
+        <ion-segment-button value="upcoming">
+          Upcoming
+        </ion-segment-button>
+        <ion-segment-button value="recent">
+          Recently changed
+        </ion-segment-button>
+        <ion-segment-button value="finished">
+          Finished
+        </ion-segment-button>
+        <ion-segment-button value="all">
+          All
+        </ion-segment-button>
         </ion-segment>
     </ion-toolbar>
   

@@ -15,9 +15,8 @@ export class NewsPage implements OnInit {
   @ViewChild('newsList', { static: true }) newsListElement: IonList;
 
   queryText = '';
-  segmentFilter = 'all';
+  segmentFilter = 'active';
   news: any[];
-  shownNews: any[] = [];
 
   constructor(private dataService: DataService, private alertController: AlertController) { }
 
@@ -35,13 +34,18 @@ export class NewsPage implements OnInit {
         this.loadActiveNews();
         break;
       }
-      case 'recent':
-      case 'changed':
-      case 'finished': {
-        this.loadOtherNews();
+      case 'upcoming': {
+        this.loadUpcomingNews();
         break;
       }
-      default: {
+      case 'recent':
+        this.loadRecentlyModified();
+        break;
+      case 'finished': {
+        this.loadFinished();
+        break;
+      }
+      case 'all': {
         this.loadAllNews();
         break;
       }
@@ -49,15 +53,40 @@ export class NewsPage implements OnInit {
 
   }
 
-  loadOtherNews(){
+  loadRecentlyModified(){ 
+    console.log("loading recently modified news (top 5)...");
     this.news = undefined;
-    console.warn('Not yet implemented!');
+    this.dataService.getRecentNews().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} news`)
+        this.news = res;
+      });
+  }
+
+  loadFinished(){ 
+    console.log("loading finished or deleted news...");
+    this.news = undefined;
+    this.dataService.getFinishedNews().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} news`)
+        this.news = res;
+      });
   }
 
   loadAllNews(){
     console.log("loading all news...");
     this.news = undefined; //just to show the `Loading news spinner`, cause it will not show if the array is empty, only if the array is null or undefined
     this.dataService.getNews().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} news`)
+        this.news = res;
+      });
+  }
+
+  loadUpcomingNews(){
+    console.log("loading upcoming news...");
+    this.news = undefined; //just to show the `Loading news spinner`, cause it will not show if the array is empty, only if the array is null or undefined
+    this.dataService.getUpcomingNews().pipe(take(1))
       .subscribe((res) => {
         console.log(`Loaded ${res.length} news`)
         this.news = res;

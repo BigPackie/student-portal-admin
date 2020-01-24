@@ -12,7 +12,7 @@ import { ErrorPictures } from '../services/errorPictures';
 export class PromotionsPage implements OnInit {
 
   queryText = '';
-  segmentFilter = 'all';
+  segmentFilter = 'active';
   promotions: any[];
 
   constructor(private dataService: DataService, private alertController: AlertController) { }
@@ -31,29 +31,58 @@ export class PromotionsPage implements OnInit {
         this.loadActivePromotions();
         break;
       }
-      case 'recent':
-      case 'changed':
-      case 'finished': {
-        this.loadOtherPromotions();
+      case 'upcoming': {
+        this.loadUpcomingPromotions();
         break;
       }
-      default: {
+      case 'recent':
+        this.loadRecentlyModified();
+        break;
+      case 'finished': {
+        this.loadFinished();
+        break;
+      }
+      case 'all': {
         this.loadAllPromotions();
         break;
       }
     }
-
   }
 
-  loadOtherPromotions(){
+  loadRecentlyModified(){ 
+    console.log("loading recently modified promotions (top 5)...");
     this.promotions = undefined;
-    console.warn('Not yet implemented!');
+    this.dataService.getRecentPromotions().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} promotions`)
+        this.promotions = res;
+      });
+  }
+
+  loadFinished(){ 
+    console.log("loading finished or deleted promotions...");
+    this.promotions = undefined;
+    this.dataService.getFinishedPromotions().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} promotions`)
+        this.promotions = res;
+      });
   }
 
   loadAllPromotions(){
     console.log("loading all promotions...");
     this.promotions = undefined; //just to show the `Loading promotions spinner`, cause it will not show if the array is empty, only if the array is null or undefined
     this.dataService.getPromotions().pipe(take(1))
+      .subscribe((res) => {
+        console.log(`Loaded ${res.length} promotions.`)
+        this.promotions = res;
+      });
+  }
+
+  loadUpcomingPromotions(){
+    console.log("loading active promotions...");
+    this.promotions = undefined; //just to show the `Loading promotions spinner`, cause it will not show if the array is empty, only if the array is null or undefined
+    this.dataService.getUpcomingPromotions().pipe(take(1))
       .subscribe((res) => {
         console.log(`Loaded ${res.length} promotions.`)
         this.promotions = res;

@@ -25,6 +25,21 @@ export class DatabaseService {
     .pipe(catchError(this.handleError));
   }
 
+  getUpcomingNews(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'news/upcoming')
+    .pipe(catchError(this.handleError));
+  }
+
+  getRecentNews(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'news/recent')
+    .pipe(catchError(this.handleError));
+  }
+
+  getFinishedNews(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'news/finished')
+    .pipe(catchError(this.handleError));
+  }
+
   getNewsItem(id: string): Observable<any> {
     return this.http.get(this.dbServicesUrl + "newsItem", { params: { "id": id } })
     .pipe(catchError(this.handleError));
@@ -72,6 +87,21 @@ export class DatabaseService {
 
   getActivePromotions(): Observable<any> {
     return this.http.get(this.dbServicesUrl + 'promotions/active')
+    .pipe(catchError(this.handleError));
+  }
+
+  getUpcomingPromotions(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'promotions/upcoming')
+    .pipe(catchError(this.handleError));
+  }
+
+  getRecentPromotions(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'promotions/recent')
+    .pipe(catchError(this.handleError));
+  }
+
+  getFinishedPromotions(): Observable<any> {
+    return this.http.get(this.dbServicesUrl + 'promotions/finished')
     .pipe(catchError(this.handleError));
   }
 
